@@ -1,0 +1,32 @@
+name: Validate TF files
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify_and_plan:
+
+    name: Validate Terraform modules and show plan
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup environment
+      uses: ./.github/actions/setup-env
+
+    - name: Validate TF
+      run: make tf-validate
+
+    - name: Validate TF style
+      run: make tf-validate-style
+
+    - name: Show TF plan
+      run: make tf-plan

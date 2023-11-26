@@ -1,0 +1,7 @@
+# Template used by make to substitute GCP project from the env var
+terraform {
+  backend "gcs" {
+    bucket = "iac-${CLOUDSDK_CORE_PROJECT}"
+    prefix = "terraform/state/system"
+  }
+}

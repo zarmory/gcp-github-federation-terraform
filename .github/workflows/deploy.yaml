@@ -1,0 +1,26 @@
+name: Deploy TF files
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  verify_and_plan:
+
+    name: Deploy Terraform configuration
+    permissions:
+      id-token: write
+      contents: read
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup environment
+      uses: ./.github/actions/setup-env
+
+    - name: Apply TF
+      run: make tf-apply

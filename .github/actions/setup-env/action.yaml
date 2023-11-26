@@ -1,0 +1,36 @@
+name: Setup Environment
+description: Setup Nix env and init Terraform
+runs:
+  using: composite
+
+  steps:
+
+  - name: Federation auth
+    uses: google-github-actions/auth@v1.1.1
+    with:
+      token_format: access_token  # Must be defined for ${{ steps.auth.outputs.access_token }} to be populated
+      workload_identity_provider: projects/896492358549/locations/global/workloadIdentityPools/github/providers/gh-actions
+      service_account: terraform@gcp-gh-federation-tf.iam.gserviceaccount.com
+
+  # Refernce: https://github.com/rikhuijzer/cache-install/issues/1#issuecomment-1316507513
+  - name: Install Nix + packages dependencies; cache results
+    uses: rikhuijzer/cache-install@v1.1.2
+    with:
+      key: nix-${{ hashFiles('.nix/**') }}
+      nix_file: ".nix/dependencies.nix"
+
+  # Set environment:
+  - name: Set environment variables for terraform
+    run: |
+      if [[ "${{github.repository}}" != "zarmory/gcp-github-federation-terraform" ]]; then
+        echo "::error ::REMOVE this stage and rather set your defaults in variables.tf"
+        exit 1
+      fi
+      echo 'TF_VAR_github_repository=${{ github.repository }}' >> "$GITHUB_ENV"
+      echo 'TF_VAR_project_admins=["user:zaar@doit.com"]' >> "$GITHUB_ENV"
+    shell: bash
+
+  # Now with nix installed we can run make as if we are inside nix-shell
+  - name: Init TF
+    run: make tf-init
+    shell: bash

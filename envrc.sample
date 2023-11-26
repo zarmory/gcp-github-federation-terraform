@@ -1,0 +1,7 @@
+# Define CLOUDSDK_CORE_PROJECT and rename this file to .envrc
+
+export CLOUDSDK_CORE_PROJECT=DEFINE_ME
+export GOOGLE_IMPERSONATE_SERVICE_ACCOUNT=terraform@${CLOUDSDK_CORE_PROJECT}.iam.gserviceaccount.com
+
+nix_direnv_watch_file $(find .nix -type f -name "*.nix")
+use nix
