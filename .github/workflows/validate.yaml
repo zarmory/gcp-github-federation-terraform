@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+  schedule:
+    # Run periodically to make sure that everything is still dandy
+    - cron: "0 0 * * *"
 
 jobs:
   verify_and_plan:
